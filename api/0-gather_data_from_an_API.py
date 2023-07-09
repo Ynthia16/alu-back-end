@@ -1,27 +1,30 @@
+
 #!/usr/bin/python3
-"""
-python script that returns TODO list progress for a given employee ID
-"""
+"""Module"""
+
 import requests
-import json
+import sys
 
+"""Module"""
 
-if __name__ == "__main__":
-    response = requests.get(f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos')
+if __name__ == '__main__':
+    """IF SCRIPT IS NOT RUN AS MODULE"""
+    employee_id = sys.argv[1]
+    user_url = "https://jsonplaceholder.typicode.com/users/{}" \
+        .format(employee_id)
+    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/" \
+        .format(employee_id)
 
-    if response.status_code == 200:
-        todos = response.json()
+    user_info = requests.get(user_url).json()
+    todos_info = requests.get(todos_url).json()
 
-        completed_tasks = [todo for todo in todos if todo['completed']]
+    employee_name = user_info["name"]
+    task_completed = list(filter(lambda obj:
+                                 (obj["completed"] is True), todos_info))
+    number_of_done_tasks = len(task_completed)
+    total_number_of_tasks = len(todos_info)
 
-        employee_name = todos[0]['username']
-        number_of_done_tasks = len(completed_tasks)
-        total_number_of_tasks = len(todos)
+    print("Employee {} is done with tasks({}/{}):".
+          format(employee_name, number_of_done_tasks, total_number_of_tasks))
 
-        print(f"Employee {employee_name} is done with tasks ({number_of_done_tasks}/{total_number_of_tasks}):")
-
-        for task in completed_tasks:
-            print(f"\t{task['title']}")
-
-    else:
-        print(f"Failed to retrieve TODO list for employee {employee_id}.")
+    [print("\t " + task["title"]) for task in task_completed]
