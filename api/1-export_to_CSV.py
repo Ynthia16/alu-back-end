@@ -1,34 +1,22 @@
-#!/usr/bin/python3i
-""" Script that uses API to get information about employee """
+#!/usr/bin/python3
+"""get TODO list"""
+
 import csv
+import json
 import requests
 import sys
-
-
 if __name__ == "__main__":
-    url = 'https://jsonplaceholder.typicode.com/'
-
-    userid = sys.argv[1]
-    employee = '{}users/{}'.format(url, userid)
-    response = requests.get(user)
-    nom = response.json()
-    name = nom.get('username')
-
-    todos = '{}todos?userId={}'.format(url, userid)
-    response = requests.get(todos)
-    tasks = response.json()
-    done = []
-    for task in tasks:
-        done.append([userid,
-                     name,
-                     task.get('completed'),
-                     task.get('title')])
-
-    filename = '{}.csv'.format(userid)
-    with open(filename, mode='w') as employee_file:
-        employee_writer = csv.writer(employee_file,
-                                     delimiter=',',
-                                     quotechar='"',
-                                     quoting=csv.QUOTE_ALL)
-        for task in done:
-            employee_writer.writerow(task)
+    link = "https://jsonplaceholder.typicode.com/users/{}".format(sys.argv[1])
+    res = requests.get(link)
+    user = json.loads(res.text)
+    num = sys.argv[1]
+    link = "https://jsonplaceholder.typicode.com/users/{}/todos".format(num)
+    res = requests.get(link)
+    todos = json.loads(res.text)
+    csv_data = [["{}".format(i["userId"]),
+                user["username"],
+                "{}".format(i["completed"]),
+                 i["title"]] for i in todos]
+    with open("{}.csv".format(user["id"]), 'w', encoding='utf-8') as f:
+        writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerows(csv_data)
