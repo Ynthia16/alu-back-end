@@ -1,30 +1,21 @@
 #!/usr/bin/python3
-""" Script that uses API to get information about employee """
+"""get TODO list"""
+
+import csv
 import json
 import requests
 import sys
-
-
 if __name__ == "__main__":
-    url = 'https://jsonplaceholder.typicode.com/'
-
-    userid = sys.argv[1]
-    employee = '{}users/{}'.format(url, userid)
-    response = requests.get(user)
-    nom = response.json()
-    name = nom.get('username')
-
-    todos = '{}todos?userId={}'.format(url, userid)
-    response = requests.get(todos)
-    tasks = response.json()
-    done = []
-    for task in tasks:
-        dict_todo = {"task": task.get('title'),
-                     "completed": task.get('completed'),
-                     "username": name}
-        done.append(dict_todo)
-
-    done_task = {str(userid): done}
-    filename = '{}.json'.format(userid)
-    with open(filename, mode='w') as f:
-        json.dump(done_task, f)
+    link = "https://jsonplaceholder.typicode.com/users/{}".format(sys.argv[1])
+    res = requests.get(link)
+    user = json.loads(res.text)
+    num = sys.argv[1]
+    link = "https://jsonplaceholder.typicode.com/users/{}/todos".format(num)
+    res = requests.get(link)
+    todos = json.loads(res.text)
+    data = [{"task": i["title"],
+             "completed": i["completed"],
+             "username": user["username"]} for i in todos]
+    json_data = json.dumps({"{}".format(user["id"]): data})
+    with open("{}.json".format(user["id"]), 'w', encoding='utf-8') as f:
+        f.write(json_data)
