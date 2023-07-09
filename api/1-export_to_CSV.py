@@ -7,7 +7,7 @@ import sys
 
 
 if __name__ == "__main__":
-def export_employee_todo_csv(employee_id):
+    def export_employee_todo_csv(employee_id):
     """Make a GET request to the API endpoint"""
     response = requests.get(f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos')
 
